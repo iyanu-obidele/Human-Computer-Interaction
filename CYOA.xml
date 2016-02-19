@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" xmlns:voxeo="http://community.voxeo.com/xmlns/vxml">
+
+<meta name="maintainer" content="YOUREMAILADDRESS@HERE.com"/>
+
+<property name="universals" value="help" />
+<link next="#MainMenu">
+  <!-- The XML grammar for the main menu. -->
+  <grammar xml:lang="en-US" root ="LINKGRAM">
+     <rule id="LINKGRAM" scope="public">
+      <one-of>
+       <item>main</item>
+       <item>begin</item>
+      </one-of>
+     </rule>
+    </grammar> 
+</link>
+
+  <form id="MainMenu">
+    <block>
+      <!--<prompt bargein="false">
+        <emphasis>Welcome!</emphasis> To the Choose Your Adventure Voice Application !
+      </prompt>-->
+    </block>
+	
+    <field name="Door">
+      <!--<prompt>
+        Your fate is in your hands. Sorry! My hands <emphasis>HA HA HA HA </emphasis>
+		<emphasis>Imagine waking up in the middle of the freeway, with three doors in front of you and the next car 10 yards from you.</emphasis>
+	</prompt>-->
+	<audio src="welcome_prompt.wav" fetchhint="prefetch" />
+	<audio src="Car Sounds_4.wav" fetchhint="prefetch" /> 
+	<!--<prompt>
+		Are you scared already ? I would suggest you open door 1.
+		Or are you feeling quite confident, then waltz through to door 2.
+		Beware! The third door might just be worse!
+		We also have the "help option" for the scared babies.
+		Say "exit" at any time to exit the application 
+      </prompt>-->
+	<audio src="Doors_Prompt.wav" fetchhint="prefetch" />
+      <!-- Grammar for available responses for either "Door 1" or "Door 2" or "Door 3".-->
+      <grammar xml:lang="en-US" root = "DOORS">
+        <rule id="DOORS" scope="public">
+         <one-of>
+      
+         <!-- If the user says any of the following choices, then the grammar assigns "door1" -->
+         <!-- the Door variable. -->
+         <item>
+          <one-of>
+            <item>Door 1</item>
+            <item>one</item>
+            <item>first door</item>
+            <item>door first</item>
+			<item>open door one</item>
+          </one-of>
+          <tag>out.Door ="door1";</tag>
+         </item>
+       
+         <!-- If the user says any of the following choices, then the grammar assigns "door2" to -->
+         <!-- the Door variable. -->
+         <item>
+          <one-of>
+            <item>Door 2</item>
+            <item>two</item>
+            <item>second door</item>
+            <item>door second</item>
+			<item>open door two</item>
+          </one-of>
+          <tag>out.Door ="door2";</tag>
+         </item>
+		 
+		 <!-- If the user says any of the following choices, then the grammar assigns "door3" to -->
+         <!-- the Door variable. -->
+         <item>
+          <one-of>
+            <item>Door 3</item>
+            <item>three</item>
+            <item>third door</item>
+            <item>door third</item>
+			<item>open door three</item>
+          </one-of>
+          <tag>out.Door ="door3";</tag>
+         </item>
+      
+		 <!-- If the user says any of the following choices, then the grammar assigns "help" to -->
+         <!-- the Door variable. -->
+		<item>
+          <one-of>
+            <item>Help</item>
+			<item>Help me</item>
+			<item>Help me i'm a scared baby</item>
+		  </one-of>
+          <tag>out.Door ="help";</tag>
+         </item>
+		
+		<item>
+          <one-of>
+            <item>Exit</item>
+			<item>Go out</item>
+		  </one-of>
+          <tag>out.Door ="Exit";</tag>
+         </item>
+		
+         </one-of>        
+        </rule>
+      </grammar>
+        
+      <noinput>
+	<audio src="no_input.wav" fetchhint="prefetch" />
+        <!--<prompt>
+          I did not hear anything. Please try again, Say Door 1, Door 2, Door 3, or help me, i'm a scared baby.
+        </prompt>-->
+       <reprompt/>
+      </noinput>
+
+      <nomatch>
+        <!--<prompt>
+          Don't be such a coward, open a door ! Say Door 1, Door 2, Door 3, or help me, i'm a scared baby.
+		  To go back to the main menu, say "Main"
+        </prompt>-->
+	<audio src="no_match.wav" fetchhint="prefetch" />
+	<audio src="Main.wav" fetchhint="prefetch" />
+      </nomatch>
+
+    </field>
+    
+    
+    <filled>
+        <if cond="Door == 'door1'">
+            <goto next="#Door1"/>
+        <elseif cond="Door == 'door2'"/>
+            <goto next="#Door2"/>
+		<elseif cond="Door == 'door3'"/>
+            <goto next="#Door3"/>
+		<elseif cond="Door == 'help'"/>
+            <goto next="#Help"/>
+		<elseif cond="Door == 'Exit'"/>
+            <goto next="#Exit"/>
+        </if>
+    </filled>
+  </form>
+
+<!--Help Module -->
+  <form id="Help">
+  <property name="universals" value="help"/>
+
+  <field name="BackToMain">	
+	<help cond="true" >
+		<!--<prompt>
+			Seal your own fate, say "door 1", "door 2" or "door 3"
+			To go back to the main menu, say "Main"
+		</prompt>-->
+		<audio src="help.wav" fetchhint="prefetch" />
+	</help>
+	</field>
+  </form>
+ 
+<form id="Exit"><block><audio src="exit.wav" fetchhint="prefetch" /><!--<prompt>Goodbye, we hope you enjoyed our voice application.</prompt>--><exit /></block></form>
+ 
+ <!-- Menu Catch events for door 1 -->
+	<catch event="battle_event">
+	<audio src="My recording #1.wav" fetchhint="prefetch" />
+	<!--<prompt>
+	Wrong Answer! You are now a zombie! We will miss you!
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>To go back to main menu say "main"</prompt>-->
+	</catch>
+	
+	<catch event="run_event">
+	<audio src="My recording #2.wav" fetchhint="prefetch" />
+	<!--<prompt>
+	You smart! But not quite, you ran straight into a moving truck, too bad. ODOT will be cleaning you up for the next week.
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>To go back to main menu say "main"</prompt>-->
+	</catch>
+	
+	<catch event="help_event">
+	<audio src="My recording #3.wav" fetchhint="prefetch" />
+	<!--<prompt>
+	Say either battle or run
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>Or To go back to main menu say "main"</prompt>-->
+	</catch>
+  
+<!-- Door 1 menu -->
+    <menu id="Door1" scope="dialog" dtmf="false">
+	<audio src="Zombie Sounds _ Free Sound Effects _ Zombie Sound Clips _ Sound Bites.wav" fetchhint="prefetch" /> 
+	<audio src="My recording #4.wav" fetchhint="prefetch" />
+	<!--<prompt>
+      Well Well Well! I guess you thought this was the easy way out.
+	  Sad News! <emphasis>It's not !</emphasis>
+	  The United States of America has a new president, <emphasis>a Zombie</emphasis>!!
+    </prompt>-->
+	<!--<prompt>
+	You will be facing this creature in a fight for your life. <emphasis>Would you Be brave, and battle your president? Or be smart and run for your life!</emphasis>
+	</prompt>-->
+	
+	<choice event="battle_event">
+	Battle
+	</choice>
+	<choice event="battle_event">
+	Fight
+	</choice>
+	<choice event="battle_event">
+	yes
+	</choice>
+	<choice event="run_event">
+	Run
+	</choice>
+	<choice event="run_event">
+	No
+	</choice>
+	<choice event="run_event">
+	Run for my life
+	</choice>
+	<choice event="help_event">
+	Help
+	</choice>
+	<choice event="exit_event">
+	Exit
+	</choice>
+	<noinput>
+        <audio src="My recording #5.wav" fetchhint="prefetch" />
+	<!--<prompt>
+          I did not hear anything. Please try again.
+        </prompt>-->
+       <reprompt/>
+    </noinput>
+	
+	<nomatch>
+	<audio src="My recording #6.wav" fetchhint="prefetch" />
+        <audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>
+          Wrong Answer ! This is the end of your journey! We will miss you!
+		  To go back to the main menu, say "Main"
+        </prompt>-->
+    </nomatch>
+	</menu>
+ 
+ <!-- Menu Catch events for door 2 -->
+  <catch event="water_event">
+	<audio src="water_event.wav" fetchhint="prefetch" />
+	<!--<prompt>
+		You will recieve 2 gallons of water, good luck hiding from the water thieves of portlandia !
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>To go back to main menu say "main"</prompt>-->
+  </catch>
+  <catch event="food_event">
+	<audio src="food_event.wav" fetchhint="prefetch" />
+	<!--<prompt>
+		You want a burger in the middle of the desert ? I'm sorry you didn't even survive long enough to eat your burger.
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>To go back to main menu say "main"</prompt>-->
+  </catch>
+  <catch event="shelter_event">
+	<audio src="shelter-event.wav" fetchhint="prefetch" />
+	<!--<prompt>
+		Smart choice! But a desert storm just sent you back to square one. The quicksands of portlandia will be hugging your body real soon
+	</prompt>-->
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>To go back to main menu say "main"</prompt>-->
+  </catch>
+	<catch event="help_event2">
+	<audio src="help_event2.wav" fetchhint="prefetch" />
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>
+	Make one request. 
+	To go back to main menu say "main"
+	</prompt>-->
+	</catch>
+	<catch event="exit_event">
+	<!--<prompt>Goodbye, we hope you enjoyed our voice application.</prompt>-->
+	<audio src="exit_event.wav" fetchhint="prefetch" />
+	<exit />
+	</catch>
+	
+<!-- Door 2 Menu -->
+<menu id="Door2" scope="dialog" dtmf="false">
+	<audio src="Desert Sounds_2 00_00_00-00_00_10.wav" fetchhint="prefetch" /> 
+	<audio src="door-2-room.wav" fetchhint="prefetch" />
+	<!--<prompt>
+      Did you hear the sound of that ?
+	  Oh yes! you're in a desert. Watch out for the rattle snakes!
+	  Lucky for you, you have one shot at making a request. Choose wisely.
+    </prompt>-->
+	
+	<choice event="water_event">
+	Water
+	</choice>
+	<choice event="food_event">
+	Food
+	</choice>
+	<choice event="shelter_event">
+	Shelter
+	</choice>
+	<choice event="shelter_event">
+	House
+	</choice>
+	<choice event="help_event2">
+	Help
+	</choice>
+	<choice event="exit_event">
+	Exit
+	</choice>
+	<noinput>
+	<audio src="door-2-no-input.wav" fetchhint="prefetch" />
+        <!--<prompt>
+          I did not hear anything. Please try again.
+        </prompt>-->
+       <reprompt/>
+    </noinput>
+	  
+	<nomatch>
+	<audio src="door-2-wrong-answer.wav" fetchhint="prefetch" />
+	<audio src="Main.wav" fetchhint="prefetch" />
+        <!--<prompt>
+          Wrong Answer ! This is the end of your journey! We will miss you!
+		  To go back to the main menu, say "Main"
+        </prompt>-->
+    </nomatch>
+</menu>
+
+ <!-- Menu Catch events for door 3 -->
+<catch event="help_event3">
+	<audio src="help-event-3.wav" fetchhint="prefetch" />
+	<audio src="Main.wav" fetchhint="prefetch" />
+	<!--<prompt>
+	Make a move. Say what you want to do.
+	To go back to main menu say "main"
+	</prompt>-->
+</catch>
+
+  <!-- Door 3 Menu -->
+<menu id="Door3" scope="dialog" dtmf="false">
+	<audio src="Battle Sounds _ Free Sound Effects _ Battle Sound Clips _ Sound Bites 00_00_00-00_00_15.wav" fetchhint="prefetch" />
+	 <audio src="door-3.wav" fetchhint="prefetch" />
+	<!--<prompt>
+      Just when you thought it couldn't get any worse!
+    </prompt>-->
+	<!--<prompt>
+	Incase you haven't figured it out yet, here's your hint: Time travel, world-war 2. I'm sure you figured it out.
+	</prompt>-->
+	<!--<prompt>
+	What's your move ?
+	</prompt>-->
+	
+	<choice event="help_event3">
+	Help
+	</choice>
+	<choice event="exit_event">
+	Exit
+	</choice>
+	
+	<noinput>
+	<audio src="door-3-no_input.wav" fetchhint="prefetch" />
+        <!--<prompt>
+          I did not hear anything. Please try again.
+        </prompt>-->
+       <reprompt/>
+    </noinput>
+	
+	<nomatch>
+	<audio src="door-3-no-match.wav" fetchhint="prefetch" />
+        <!--<prompt>
+          Wrong Answer ! This is the end of your journey! We will send a mail back home for you.
+		  To go back to the main menu, say "Main"
+        </prompt>-->
+    </nomatch>
+</menu>
+  
+  
+</vxml>
